@@ -1,0 +1,118 @@
+<% if (productos.length === 0) { %>
+  <p class="text-center text-gray-600 mt-10">No se encontraron productos.</p>
+<% } else { %>
+  <p class="text-gray-700 mb-4">
+    Se encontraron <strong><%= totalResultados %></strong> productos para "<%= termino %>".
+  </p>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-6">
+    <% productos.forEach((p) => { %>
+      <div class="bg-white rounded shadow p-4 transition transform hover:shadow-lg hover:-translate-y-2 flex flex-col">
+
+        <!-- Imagen + nombre + precio -->
+        <div class="flex flex-row sm:flex-col gap-3 items-center sm:items-start">
+          <img src="<%= p.imagen %>" alt="<%= p.nombre %>" class="w-28 h-28 object-contain sm:w-full sm:h-40 flex-shrink-0" />
+          
+          <!-- Mobile: info horizontal -->
+          <div class="flex flex-col justify-between w-full sm:hidden">
+            <h3 class="font-bold text-gray-900 text-sm"><%= p.nombre %></h3>
+            <p class="text-blue-700 font-semibold my-1">$ <%= p.precio.toLocaleString('es-AR') %></p>
+            <div class="flex gap-2 mt-2">
+              <a href="/producto/<%= p.codigo.trim() %>" class="flex-1 text-center bg-blue-700 text-white px-2 py-2 rounded text-sm font-semibold hover:bg-blue-800">
+                🔍 Ver
+              </a>
+              <button onclick="agregarAlCarritoDesdeCatalogo('<%= p.codigo.trim() %>')" class="flex-1 text-center bg-green-600 text-white px-2 py-2 rounded text-sm font-semibold hover:bg-green-700">
+                🛒
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Desktop: info vertical -->
+        <div class="hidden sm:flex flex-col mt-4">
+          <h3 class="font-bold text-gray-900 text-sm mb-1"><%= p.nombre %></h3>
+          <p class="text-blue-700 font-semibold mb-3">$ <%= p.precio.toLocaleString('es-AR') %></p>
+          <div class="flex gap-2 mt-auto">
+            <a href="/producto/<%= p.codigo.trim() %>" class="w-1/2 text-center bg-blue-700 text-white px-3 py-2 rounded text-sm font-semibold hover:bg-blue-800">
+              🔍 Ver producto
+            </a>
+            <button onclick="agregarAlCarritoDesdeCatalogo('<%= p.codigo.trim() %>')" class="w-1/2 text-center bg-green-600 text-white px-3 py-2 rounded text-sm font-semibold hover:bg-green-700">
+              🛒 Agregar
+            </button>
+          </div>
+        </div>
+
+      </div>
+    <% }); %>
+  </div>
+
+  <!-- Paginación -->
+  <% if (totalPaginas > 1) { %>
+    <div class="flex justify-center items-center gap-1 mt-10 flex-wrap">
+      <% if (paginaActual > 1) { %>
+        <a href="?buscar=<%= termino %>&page=<%= paginaActual - 1 %>" class="px-3 py-2 bg-gray-200 text-sm rounded hover:bg-gray-300">« Anterior</a>
+      <% } %>
+
+      <% 
+        const mostrar = 5
+        let inicio = Math.max(1, paginaActual - Math.floor(mostrar / 2))
+        let fin = Math.min(totalPaginas, inicio + mostrar - 1)
+        if (fin - inicio < mostrar - 1) inicio = Math.max(1, fin - mostrar + 1)
+      %>
+
+      <% for (let i = inicio; i <= fin; i++) { %>
+        <a href="?buscar=<%= termino %>&page=<%= i %>" class="px-3 py-2 rounded text-sm <%= i === paginaActual ? 'bg-blue-800 text-white font-bold' : 'bg-gray-200 hover:bg-gray-300' %>">
+          <%= i %>
+        </a>
+      <% } %>
+
+      <% if (paginaActual < totalPaginas) { %>
+        <a href="?buscar=<%= termino %>&page=<%= paginaActual + 1 %>" class="px-3 py-2 bg-gray-200 text-sm rounded hover:bg-gray-300">Siguiente »</a>
+      <% } %>
+    </div>
+  <% } %>
+<% } %>
+
+<script>
+  async function agregarAlCarritoDesdeCatalogo(codigo) {
+    const carrito = JSON.parse(localStorage.getItem("carrito")) || {};
+    carrito[codigo] = (carrito[codigo] || 0) + 1;
+    localStorage.setItem("carrito", JSON.stringify(carrito));
+
+    await fetch("/carrito/agregar", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ codigo, cantidad: 1 })
+    });
+
+    mostrarNotificacion("Producto agregado al carrito ✅");
+    actualizarContadorCarrito();
+  }
+
+  function mostrarNotificacion(mensaje = "Producto agregado al carrito ✅") {
+    const noti = document.getElementById("notificacionCarrito");
+    if (!noti) return;
+    noti.textContent = mensaje;
+    noti.classList.remove("hidden", "opacity-0");
+    noti.classList.add("opacity-100");
+
+    setTimeout(() => {
+      noti.classList.remove("opacity-100");
+      setTimeout(() => noti.classList.add("hidden"), 300);
+    }, 2000);
+  }
+
+  async function actualizarContadorCarrito() {
+    try {
+      const carrito = JSON.parse(localStorage.getItem("carrito")) || {};
+      const total = Object.values(carrito).reduce((acc, cantidad) => acc + cantidad, 0);
+      const contador = document.getElementById("contadorCarrito");
+      if (contador) contador.textContent = total;
+    } catch (err) {
+      console.error("Error al actualizar contador:", err);
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", actualizarContadorCarrito);
+</script>
+

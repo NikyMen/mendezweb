@@ -1,0 +1,38 @@
+<h2 class="text-2xl font-bold mb-4">Iniciar sesión</h2>
+
+<form id="loginForm" class="flex flex-col gap-4 w-full max-w-md">
+  <input type="text" name="username" placeholder="Usuario" class="p-3 border rounded" required>
+  <input type="password" name="password" placeholder="Contraseña" class="p-3 border rounded" required>
+  <button class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">Ingresar</button>
+</form>
+
+<p class="mt-2 text-sm">
+  ¿No tenés cuenta?
+  <a href="/register" class="text-blue-600 underline">Registrate</a>
+</p>
+
+<script>
+  document.getElementById("loginForm").addEventListener("submit", async (e) => {
+    e.preventDefault()
+
+    const data = {
+      username: e.target.username.value,
+      password: e.target.password.value
+    }
+
+    const res = await fetch("/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data)
+    })
+
+    const result = await res.json().catch(() => null)
+
+    if (res.ok) {
+      alert(`Bienvenido ${result.user.username}`)
+      window.location.href = "/"
+    } else {
+      alert(result?.error || "Usuario o contraseña inválidos")
+    }
+  })
+</script>

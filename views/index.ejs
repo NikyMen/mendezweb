@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Inicio</title>
+  <link rel="icon" href="/favicon.png" type="image/png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 text-gray-800 font-sans">
+  
+
+  <!-- Banner superior -->
+  <div class="bg-yellow-400 text-blue-900 px-6 py-3 text-center font-semibold rounded-b mb-6">
+    🚚 Envío gratis en compras mayores a $80.000 en Corrientes
+  </div>
+
+  <!-- Ofertas con Swiper.js -->
+  <section class="bg-white p-4 rounded shadow mb-8 max-w-screen-xl mx-auto">
+    <h2 class="text-xl font-semibold mb-4">Inspirado en lo último que viste</h2>
+
+    <!-- Swiper -->
+    <div class="swiper-container relative">
+      <div class="swiper-wrapper">
+        <% productos.forEach(p => { %>
+          <div class="swiper-slide">
+            <div class="bg-white border rounded p-3 flex flex-col h-full">
+              <img src="<%= p.imagen %>" alt="<%= p.nombre %>" class="w-full h-24 object-contain mb-2" />
+              <h3 class="text-sm font-medium text-gray-800 truncate flex-grow"><%= p.nombre %></h3>
+              <p class="text-lg font-bold text-gray-900 mt-1">$ <%= p.precio.toLocaleString('es-AR') %></p>
+              <p class="text-green-600 text-sm mt-1">Envío gratis</p>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+      <!-- Add Pagination -->
+      <div class="swiper-pagination"></div>
+      <!-- Add Navigation -->
+      <div class="swiper-button-next"></div>
+      <div class="swiper-button-prev"></div>
+    </div>
+  </section>
+
+  <!-- Categorías -->
+  <section class="py-16 px-6">
+    <h2 class="text-3xl font-bold text-center text-blue-900 mb-10">🔧 Categorías Populares</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 max-w-screen-xl mx-auto">
+      <a href="/productos?buscar=cubierta" class="bg-white p-6 rounded shadow hover:shadow-xl transition text-center">
+        <img src="/img/1.png" alt="Cubierta" class="h-36 mx-auto mb-4 object-contain">
+        <span class="text-lg font-semibold text-gray-800">Cubiertas</span>
+      </a>
+      <a href="/productos?buscar=bateria" class="bg-white p-6 rounded shadow hover:shadow-xl transition text-center">
+        <img src="/img/2.png" alt="Batería" class="h-36 mx-auto mb-4 object-contain">
+        <span class="text-lg font-semibold text-gray-800">Baterías</span>
+      </a>    
+      <a href="/productos?buscar=luz" class="bg-white p-6 rounded shadow hover:shadow-xl transition text-center">
+        <img src="/img/3.png" alt="Luz" class="h-36 mx-auto mb-4 object-contain">
+        <span class="text-lg font-semibold text-gray-800">Luces</span>
+      </a>
+      <a href="/productos?buscar=filtro" class="bg-white p-6 rounded shadow hover:shadow-xl transition text-center">
+        <img src="/img/4.png" alt="Filtro" class="h-36 mx-auto mb-4 object-contain">
+        <span class="text-lg font-semibold text-gray-800">Filtros</span>
+      </a>
+      <a href="/productos?buscar=transmision" class="bg-white p-6 rounded shadow hover:shadow-xl transition text-center">
+        <img src="/img/5.png" alt="Transmisión" class="h-36 mx-auto mb-4 object-contain">
+        <span class="text-lg font-semibold text-gray-800">Transmisión</span>
+      </a>
+      <a href="/productos?buscar=aceite" class="bg-white p-6 rounded shadow hover:shadow-xl transition text-center">
+        <img src="/img/6.png" alt="Aceite" class="h-36 mx-auto mb-4 object-contain">
+        <span class="text-lg font-semibold text-gray-800">Aceites</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- Marcas -->
+  <section class="py-12 px-6 bg-white border-t mt-12">
+    <h2 class="text-2xl font-bold text-center text-blue-900 mb-8">🚀 Trabajamos con las mejores marcas</h2>
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-8 items-center justify-items-center max-w-screen-xl mx-auto">
+      <img src="/img/marcas/pirelli.png" alt="Pirelli" class="h-16 object-contain" />
+      <img src="/img/marcas/yuasa.png" alt="Yuasa" class="h-16 object-contain" />
+      <img src="/img/marcas/ngk.png" alt="NGK" class="h-16 object-contain" />
+      <img src="/img/marcas/motul.png" alt="Motul" class="h-16 object-contain" />
+      <img src="/img/marcas/castrol.png" alt="Castrol" class="h-16 object-contain" />
+      <img src="/img/marcas/bosch.png" alt="Bosch" class="h-16 object-contain" />
+    </div>
+  </section>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var swiper = new Swiper('.swiper-container', {
+      slidesPerView: 1,
+      spaceBetween: 10,
+      pagination: {
+        el: '.swiper-pagination',
+        clickable: true,
+      },
+      navigation: {
+        nextEl: '.swiper-button-next',
+        prevEl: '.swiper-button-prev',
+      },
+      breakpoints: {
+        640: {
+          slidesPerView: 2,
+          spaceBetween: 20,
+        },
+        768: {
+          slidesPerView: 4,
+          spaceBetween: 40,
+        },
+        1024: {
+          slidesPerView: 5,
+          spaceBetween: 50,
+        },
+      }
+    });
+  });
+</script>
+
+</body>
+</html>
+
+

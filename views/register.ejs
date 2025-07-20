@@ -1,0 +1,57 @@
+
+
+<h2 class="text-2xl font-bold mb-4">Crear cuenta</h2>
+
+<form id="registerForm" class="flex flex-col gap-4 w-full max-w-md">
+  <input
+    type="text"
+    name="username"
+    placeholder="Usuario"
+    class="p-3 border rounded"
+    required
+  />
+  <input
+    type="password"
+    name="password"
+    placeholder="Contraseña"
+    class="p-3 border rounded"
+    required
+  />
+  <button
+    type="submit"
+    class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+  >
+    Registrarse
+  </button>
+</form>
+
+<p class="mt-2 text-sm">
+  ¿Ya tenés cuenta?
+  <a href="/login" class="text-blue-600 underline">Iniciar sesión</a>
+</p>
+
+<script>
+  document.getElementById("registerForm").addEventListener("submit", async (e) => {
+    e.preventDefault()
+
+    const data = {
+      username: e.target.username.value,
+      password: e.target.password.value
+    }
+
+    const res = await fetch("/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data)
+    })
+
+    const result = await res.json().catch(() => null)
+
+    if (res.ok) {
+      alert("Usuario registrado con éxito")
+      window.location.href = "/login"
+    } else {
+      alert(result?.error || "Error al registrarse")
+    }
+  })
+</script>

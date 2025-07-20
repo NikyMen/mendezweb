@@ -1,0 +1,46 @@
+<main class="max-w-screen-xl mx-auto px-4 py-10">
+  <h1 class="text-3xl font-bold mb-8">🛒 Tu carrito</h1>
+
+  <% if (productos.length === 0) { %>
+    <p class="text-gray-600 text-center">Tu carrito está vacío.</p>
+  <% } else { %>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <% productos.forEach(p => { %>
+        <div class="bg-white shadow rounded p-4 flex flex-col">
+          <img src="<%= p.imagen %>" alt="<%= p.nombre %>" class="w-full h-40 object-contain mb-3" />
+          <h2 class="text-lg font-bold text-gray-900 mb-2"><%= p.nombre %></h2>
+          <p class="text-sm text-gray-500 mb-1">Código: <%= p.codigo %></p>
+          <p class="text-blue-700 font-semibold">Precio: $<%= p.precio.toLocaleString("es-AR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %></p>
+          <p class="text-gray-700">Cantidad: <%= p.cantidad %></p>
+          <p class="text-gray-900 font-semibold mt-2">Subtotal: $<%= p.subtotal.toLocaleString("es-AR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %></p>
+
+          <form action="/carrito/eliminar" method="POST" class="mt-4">
+            <input type="hidden" name="codigo" value="<%= p.codigo %>">
+            <button class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 w-full">
+              Eliminar
+            </button>
+          </form>
+        </div>
+      <% }) %>
+    </div>
+    <h2 class="text-2xl font-bold text-gray-900">Total: $<%= total.toLocaleString("es-AR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %></h2>
+
+    <div class="mt-10 bg-white rounded p-6 shadow max-w-md mx-auto">
+  <h2 class="text-2xl font-bold text-gray-900 mb-4">💬 Consultar stock por WhatsApp</h2>
+  <form action="/carrito/finalizar" method="POST" class="space-y-4">
+    <div>
+      <label for="nombre" class="block text-sm font-medium text-gray-700">Tu nombre</label>
+      <input type="text" name="nombre" id="nombre" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-800 focus:border-blue-800" />
+    </div>
+    <div>
+      <label for="telefono" class="block text-sm font-medium text-gray-700">Tu número de teléfono</label>
+      <input type="text" name="telefono" id="telefono" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-800 focus:border-blue-800" />
+    </div>
+    <button type="submit" class="w-full bg-green-600 text-white py-3 rounded text-lg font-semibold hover:bg-green-700 transition">
+      📲 Consultar por WhatsApp
+    </button>
+  </form>
+</div>
+
+  <% } %>
+</main>

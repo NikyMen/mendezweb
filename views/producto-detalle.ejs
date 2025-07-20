@@ -1,0 +1,27 @@
+<main class="max-w-screen-xl mx-auto px-4 py-10">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-10 bg-white shadow-xl rounded-lg p-6">
+    
+    <!-- Imagen -->
+    <div class="flex items-center justify-center">
+      <img src="<%= producto.imagen %>" alt="<%= producto.nombre %>" class="w-full max-h-96 object-contain rounded" />
+    </div>
+
+    <!-- Detalles -->
+    <div class="flex flex-col justify-between">
+      <div>
+        <h1 class="text-3xl font-bold text-gray-900 mb-4"><%= producto.nombre %></h1>
+        <p class="text-sm text-gray-500 mb-2">Código: <span class="font-medium"><%= producto.codigo %></span></p>
+        <p class="text-blue-800 font-extrabold text-2xl mb-6">$ <%= producto.precio.toFixed(2) %></p>
+        <p class="text-gray-700 text-base mb-8"><%= producto.descripcion %></p>
+      </div>
+
+      <!-- Botones -->
+      <div class="flex flex-col sm:flex-row gap-4">
+        <button class="bg-blue-800 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg shadow transition">
+          🛒 Agregar al carrito
+        </button>
+        <a href="/productos" class="text-blue-700 underline hover:text-blue-500 text-center sm:text-left">← Volver al catálogo</a>
+      </div>
+    </div>
+  </div>
+</main>
