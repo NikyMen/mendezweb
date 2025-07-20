@@ -11,8 +11,11 @@ import expressLayouts from "express-ejs-layouts"
 import { SECRET_KEY } from "./config.js"
 import Product from "./models/Product.js"; // Importa el modelo Product
 import Order from "./models/Order.js";     // Importa el modelo Order
-import connectToDatabase from "./lib/db.js";
+import { connect as connectToDatabase } from "./lib/db.js";
 import authRouter from "./routes/auth.routes.js";
+
+// Conectar a la base de datos al iniciar la aplicación
+connectToDatabase();
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)

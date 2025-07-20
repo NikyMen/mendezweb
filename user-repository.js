@@ -3,7 +3,7 @@ import mongoose from "mongoose"; // Importa Mongoose
 import crypto from "crypto";     // genera UUID para los IDs
 import bcrypt from "bcryptjs";   // encripta y compara contraseñas
 import { SALT_ROUNDS } from "./config.js"; // Asegúrate que config.js esté correcto
-import connectToDatabase from "./lib/db.js";
+import { connect as connectToDatabase } from "./lib/db.js";
 
 // Define el esquema de usuario con Mongoose
 const UserSchema = new mongoose.Schema({

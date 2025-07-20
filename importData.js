@@ -6,7 +6,7 @@ import mongoose from "mongoose";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
-import connectToDatabase from "./lib/db.js";
+import { connect as connectToDatabase } from "./lib/db.js";
 import Product from "./models/Product.js";
 
 const __filename = fileURLToPath(import.meta.url);
