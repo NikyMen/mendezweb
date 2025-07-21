@@ -9,8 +9,8 @@ import expressLayouts from "express-ejs-layouts"
 
 // CONFIG PROPIA
 import { SECRET_KEY } from "./config.js"
-import Product from "./models/Product.js"; // Importa el modelo Product
-import Order from "./models/Order.js";     // Importa el modelo Order
+import Product from "./models/product.js"; // Importa el modelo Product
+import Order from "./models/order.js";     // Importa el modelo Order
 import { connect as connectToDatabase } from "./lib/db.js";
 import authRouter from "./routes/auth.routes.js";
 

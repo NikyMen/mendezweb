@@ -1,7 +1,7 @@
 
 import dotenv from 'dotenv';
 
-// Cargar variables de entorno
+// Cargar variables de entorno .
 dotenv.config({ path: '.env.local' });
 
 async function main() {

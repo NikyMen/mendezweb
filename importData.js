@@ -7,7 +7,7 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { connect as connectToDatabase } from "./lib/db.js";
-import Product from "./models/Product.js";
+import Product from "./models/product.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
