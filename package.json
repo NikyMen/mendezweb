@@ -1,0 +1,33 @@
+{
+  "name": "repuestos-mendez",
+  "version": "1.0.0",
+  "description": "Aplicación web para gestión de usuarios con Express.js",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "node --watch index.js",
+    "start": "node index.js",
+    "build": "echo 'Build completed'",
+    "vercel-build": "echo 'Vercel build completed'",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": ["express", "vercel", "serverless", "node"],
+  "author": "",
+  "license": "ISC",
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "packageManager": "pnpm@10.7.0",
+  "dependencies": {
+    "bcryptjs": "3.0.2",
+    "db-local": "3.1.0",
+    "ejs": "^3.1.10",
+    "express": "5.1.0"
+  },
+  "devDependencies": {
+    "standard": "17.1.2"
+  },
+  "eslintConfig": {
+    "extends": "standard"
+  }
+}
