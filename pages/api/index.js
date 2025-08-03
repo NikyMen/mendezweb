@@ -1,5 +1,5 @@
-import { connect } from '../../lib/db';
-import Product from '../../models/product.js';
+import { connect } from '../../lib/db'; // Importamos la función connect desde lib/db
+import Product from '../../models/product'; // Importamos el modelo Product
 
 export default async function handler(req, res) {
   try {

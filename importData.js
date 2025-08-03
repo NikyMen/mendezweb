@@ -1,56 +1,60 @@
-// C:/Users/nikom/Dev/web/importData.js
-import dotenv from "dotenv";
-dotenv.config({ path: ".env.local" }); // Carga las variables desde .env.local
+import dotenv from 'dotenv'
+dotenv.config()
 
-import mongoose from "mongoose";
-import fs from "fs";
-import path from "path";
-import { fileURLToPath } from "url";
-import { connect as connectToDatabase } from "./lib/db.js";
-import Product from "./models/product.js";
+import { PrismaClient } from '@prisma/client'
+import fs from 'fs'
+import path from 'path'
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const prisma = new PrismaClient()
 
-const importData = async () => {
+
+async function main() {
+  console.log('Iniciando la importación de datos...')
+
   try {
-    await connectToDatabase();
-    console.log("Conectado a MongoDB Atlas para importación.");
+    // 1. Limpiar la tabla de productos existente
+    await prisma.product.deleteMany({})
+    console.log('Tabla de productos limpiada.')
 
-    try {
-      // Eliminar datos existentes para evitar duplicados en cada ejecución
-      await Product.deleteMany({});
-      console.log("Datos de productos existentes eliminados.");
+    // 2. Leer el archivo JSON de productos
+    const productosPath = path.join(process.cwd(), 'db', 'productos_actualizados.json')
+    const productosData = JSON.parse(fs.readFileSync(productosPath, 'utf-8'))
+    console.log(`Se encontraron ${productosData.length} productos en el archivo JSON.`)
 
-      // Importar productos
-      const productosPath = path.join(__dirname, "data", "productos.json");
-      const productosData = JSON.parse(fs.readFileSync(productosPath, "utf-8"));
-      await Product.insertMany(productosData);
-      console.log(`Se importaron ${productosData.length} productos.`);
-
-      // Importar ofertas (usando el mismo modelo Product ya que tienen la misma estructura)
-      const ofertasPath = path.join(__dirname, "data", "ofertas.json");
-      const ofertasData = JSON.parse(fs.readFileSync(ofertasPath, "utf-8"));
-      // Puedes decidir si quieres que las ofertas sean una colección separada o parte de los productos
-      // Por simplicidad, las importaremos a la misma colección 'products' por ahora.
-      // Si necesitas diferenciarlas, podrías añadir un campo 'isOffer: Boolean' al esquema.
-      await Product.insertMany(ofertasData);
-      console.log(`Se importaron ${ofertasData.length} ofertas.`);
-
-      console.log("Importación de datos completada.");
-    } catch (error) {
-      console.error("Error durante la importación de datos:", error);
-    } finally {
-      // En un script que se ejecuta una sola vez como este, no es necesario desconectar manualmente.
-      // El proceso de Node.js se cerrará y la conexión se terminará de forma natural.
-      // De hecho, llamar a `mongoose.disconnect()` aquí es problemático porque cierra la conexión
-      // global en caché que tu aplicación principal (index.js) intenta reutilizar, causando errores.
-      console.log("Importación finalizada. La conexión se cerrará al terminar el proceso.");
+    // 3. Filtrar productos duplicados por 'codigo'
+    const productosUnicos = [];
+    const codigosVistos = new Set();
+    for (const p of productosData) {
+      if (!codigosVistos.has(p.codigo)) {
+        productosUnicos.push(p);
+        codigosVistos.add(p.codigo);
+      }
     }
-  } catch (err) {
-    console.error("Error al conectar a MongoDB Atlas para importación:", err);
-    process.exit(1);
-  }
-};
+    console.log(`Se encontraron ${productosUnicos.length} productos únicos.`)
 
-importData();
+    // 4. Preparar los datos para Prisma (asegurando que el precio sea un número)
+    const productosParaCrear = productosUnicos.map(p => ({
+      codigo: p.codigo,
+      nombre: p.nombre,
+      precio: parseFloat(p.precio) || 0, // Convierte a número, si falla pone 0
+      imagen: p.imagen,
+      descripcion: p.descripcion
+    }));
+
+    // 5. Insertar los nuevos productos en la base de datos
+    const result = await prisma.product.createMany({
+      data: productosParaCrear,
+    })
+
+    console.log(`¡Importación completada! Se crearon ${result.count} nuevos productos.`)
+
+  } catch (error) {
+    console.error('Error durante la importación de datos:', error)
+    process.exit(1)
+  } finally {
+    // 6. Desconectar el cliente de Prisma
+    await prisma.$disconnect()
+  }
+}
+
+main()

@@ -1,45 +1,33 @@
 // user-repository.js
-import mongoose from "mongoose"; // Importa Mongoose
 import crypto from "crypto";     // genera UUID para los IDs
 import bcrypt from "bcryptjs";   // encripta y compara contraseñas
 import { SALT_ROUNDS } from "./config.js"; // Asegúrate que config.js esté correcto
-import { connect as connectToDatabase } from "./lib/db.js";
-
-// Define el esquema de usuario con Mongoose
-const UserSchema = new mongoose.Schema({
-  _id: { type: String, required: true },
-  username: { type: String, required: true, unique: true }, // Asegura que el username sea único
-  password: { type: String, required: true }
-});
-
-// Crea el modelo User a partir del esquema
-const User = mongoose.model("User", UserSchema);
+import prisma from "./lib/db.js"; // Importa el cliente de Prisma
 
 // Clase con métodos para manejar usuarios
 export class UserRepository {
-  // No es necesario conectar en cada método si el modelo ya está asociado a una conexión
-  // Mongoose gestiona esto internamente una vez que la conexión se establece.
   static async create({ username, password }) {
     Validation.username(username);
     Validation.password(password);
 
-    // Verifica si ya existe el usuario usando Mongoose
-    const existingUser = await User.findOne({ username });
+    // Verifica si ya existe el usuario usando Prisma
+    const existingUser = await prisma.user.findUnique({ where: { username } });
     if (existingUser) {
       throw new Error("Username already exists");
     }
 
-    const id = crypto.randomUUID(); // _id será un string
+    const id = crypto.randomUUID(); // id será un string
     const hashedPassword = bcrypt.hashSync(password, SALT_ROUNDS);
 
-    // Crea y guarda el nuevo usuario usando Mongoose
-    const newUser = new User({
-      _id: id,
-      username,
-      password: hashedPassword
+    // Crea y guarda el nuevo usuario usando Prisma
+    const newUser = await prisma.user.create({
+      data: {
+        id,
+        username,
+        password: hashedPassword
+      }
     });
-    await newUser.save(); // Guarda el documento en MongoDB
-    return id;
+    return newUser.id;
   }
   
   // Método para iniciar sesión
@@ -48,15 +36,16 @@ export class UserRepository {
     Validation.username(username);
     Validation.password(password);
 
-    // Busca el usuario usando Mongoose
-    const user = await User.findOne({ username });
+    // Busca el usuario usando Prisma
+    const user = await prisma.user.findUnique({ where: { username } });
     if (!user) throw new Error("username does not exist");
 
     const isValid = await bcrypt.compare(password, user.password);
     if (!isValid) throw new Error("password is invalid");
 
     // Devuelve un objeto sin la contraseña
-    const { password: _, ...publicUser } = user.toObject(); // .toObject() para obtener un objeto JS plano
+    // Prisma ya devuelve objetos planos, no es necesario .toObject()
+    const { password: _, ...publicUser } = user; 
     return publicUser;
   }
 }

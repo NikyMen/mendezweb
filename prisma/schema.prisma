@@ -1,0 +1,63 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"] // <-- AÑADIR ESTA LÍNEA
+}
+
+datasource db {
+  provider     = "postgresql"
+  url          = env("DATABASE_URL")
+}
+
+//=============== MODELS ===============
+
+// Modelo para los productos de la tienda
+model Product {
+  codigo      String  @id // Usamos el código de producto como ID único
+  nombre      String
+  precio      Float
+  imagen      String? // La imagen es opcional
+  descripcion String? // La descripción es opcional
+
+  // Relación: Un producto puede estar en muchos items de pedido
+  orderItems  OrderItem[]
+}
+
+// Modelo para los usuarios que se registran
+model User {
+  id       String @id @default(uuid()) // ID autogenerado como UUID
+  username String @unique
+  password String // La contraseña ya encriptada
+}
+
+// Modelo para los pedidos finalizados
+model Order {
+  id         Int         @id @default(autoincrement()) // ID numérico autoincremental
+  nombre     String      // Nombre del cliente
+  telefono   String      // Teléfono del cliente
+  total      Float       // Total del pedido
+  createdAt  DateTime    @default(now()) // Fecha de creación
+
+  // Relación: Un pedido tiene muchos items
+  productos  OrderItem[]
+}
+
+// Modelo intermedio para los productos dentro de un pedido (tabla de unión)
+model OrderItem {
+  id        Int     @id @default(autoincrement())
+  cantidad  Int
+  subtotal  Float
+
+  // Relación con el Pedido (Order)
+  orderId   Int
+  order     Order   @relation(fields: [orderId], references: [id])
+
+  // Relación con el Producto (Product)
+  productCodigo String
+  product       Product @relation(fields: [productCodigo], references: [codigo])
+
+  // Un producto solo puede aparecer una vez por pedido
+  @@unique([orderId, productCodigo])
+}
