@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "dev": "node start.js",
-    "start": "node start.js"
+    "start": "node start.js",
+    "postinstall": "prisma generate"
   },
   "keywords": [],
   "author": "",
